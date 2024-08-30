@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload Dashboard</title>
+    <meta author="sean">
+    <meta version="20240828">
+<!--    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">-->
+    <link href="/tailwind.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100 h-screen flex">
+<!-- 左侧菜单栏 -->
+<aside class="w-64 bg-gray-800 text-white flex flex-col justify-between">
+    <div>
+        <div class="p-6">
+            <h2 class="text-3xl font-bold">Upload Dashboard</h2>
+        </div>
+        <nav class="mt-6">
+            <a href="#taskStatus" class="menu-item block py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700">Task Status</a>
+            <a href="#uploadFile" class="menu-item block py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700">Upload File</a>
+            <a href="#tableConfig" class="menu-item block py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700">Table Config</a>
+        </nav>
+    </div>
+
+    <!-- 用户信息和退出按钮 -->
+    <div class="p-6 bg-gray-700 mt-auto">
+        <div class="mb-4">
+            <h3 class="text-lg font-semibold">Current User</h3>
+            <p id="currentUser" class="text-md">sean</p>
+        </div>
+        <button id="logoutButton" class="w-full bg-red-500 text-white py-2 px-4 rounded-md hover:bg-red-600">Logout</button>
+    </div>
+</aside>
+
+<!-- 右侧内容区 -->
+<div class="flex-1 p-6 bg-gray-100 overflow-y-auto flex justify-center items-center h-full">
+    <!-- Task Status 内容 -->
+    <div id="taskStatus" class="hidden w-full max-w-3xl bg-white p-8 rounded-lg shadow-md">
+        <h2 class="text-2xl font-bold mb-6 text-center">Task Status</h2>
+
+        <!-- 搜索框 -->
+        <div class="mb-4">
+            <input type="text" id="searchInput" placeholder="Search by Task ID or File Name" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+        </div>
+        <button onclick="searchTasks()" class="mb-6 bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600">Search</button>
+
+        <div class="overflow-x-auto">
+            <table id="taskTable" class="min-w-full bg-white border border-gray-200">
+                <thead class="bg-gray-50">
+                <tr>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Task ID</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">File Name</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Table Name</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Error Message</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Elapsed Time</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Create At</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Updated At</th>
+                </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                <!-- Task data will be dynamically loaded here -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Table Config 内容 -->
+    <div id="tableConfig" class="hidden w-full max-w-3xl bg-white p-8 rounded-lg shadow-md">
+        <h2 class="text-2xl font-bold mb-6 text-center">Table Configuration</h2>
+
+        <!-- 搜索框 -->
+        <div class="mb-4">
+            <input type="text" id="searchConfig" placeholder="Search by table name" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+        </div>
+        <button onclick="searchConfig()" class="mb-6 bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600">Search</button>
+
+        <!-- Form to add a new table configuration -->
+        <form id="addConfigForm" class="space-y-4">
+            <div>
+                <label for="table_name" class="block text-sm font-medium text-gray-700">Table Name:</label>
+                <input type="text" id="table_name" name="table_name" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+            </div>
+            <div>
+                <label for="column_name" class="block text-sm font-medium text-gray-700">Column Name:</label>
+                <input type="text" id="column_name" name="column_name" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+            </div>
+            <div>
+                <label for="column_order" class="block text-sm font-medium text-gray-700">Column Order:</label>
+                <input type="number" id="column_order" name="column_order" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+            </div>
+            <div>
+                <input type="submit" value="Add Configuration" class="w-full bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600">
+            </div>
+        </form>
+
+        <hr class="my-6">
+
+        <!-- Table to display existing configurations -->
+        <div class="overflow-x-auto max-h-96">
+            <table id="configTable" class="min-w-full bg-white border border-gray-200 mx-h-full">
+                <thead class="bg-gray-50">
+                <tr>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Table Name</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Column Name</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Column Order</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                <!-- Configurations will be dynamically loaded here -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Upload File 内容 -->
+    <div id="uploadFile" class="hidden w-full max-w-3xl bg-white p-8 rounded-lg shadow-md">
+        <h2 class="text-2xl font-bold mb-6 text-center">Upload Excel File</h2>
+
+        <form id="uploadForm" class="space-y-4">
+            <div>
+                <label class="block text-sm font-medium text-gray-700">Choose Excel file:</label>
+                <div class="mt-1 flex items-center">
+                    <label for="file" class="cursor-pointer bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600">
+                        <span id="fileName">Select a file</span>
+                    </label>
+                    <input type="file" id="file" name="file" class="hidden" accept=".xlsx,.xls">
+                </div>
+            </div>
+            <div>
+                <label for="table" class="block text-sm font-medium text-gray-700">Target Database Table:</label>
+                <input type="text" id="table" name="table" placeholder="Enter table name" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+            </div>
+            <div>
+                <div class="mb-4">
+                    <progress id="progressBar" value="0" max="100" class="w-full h-4"></progress>
+                </div>
+                <input type="submit" value="Upload" class="w-full bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600">
+            </div>
+        </form>
+        <div id="message" class="text-center mt-4 text-lg"></div>
+    </div>
+</div>
+
+<script>
+    // Function to toggle between views
+    function showSection(sectionId) {
+        document.querySelectorAll('.menu-item').forEach(item => {
+            item.classList.remove('bg-blue-500'); // 移除高亮颜色
+        });
+        document.querySelector(`a[href="#${sectionId}"]`).classList.add('bg-blue-500'); // 添加高亮颜色
+
+        document.querySelectorAll('div[id^="tableConfig"], div[id^="uploadFile"], div[id^="taskStatus"]').forEach(section => {
+            section.classList.add('hidden');
+        });
+
+        document.getElementById(sectionId).classList.remove('hidden');
+    }
+
+    function searchConfig(){
+        let table_name = document.getElementById("searchConfig").value
+        if (table_name === ""){
+            return loadConfig();
+        }
+
+        fetch(`/api/table_config/${table_name}`)
+            .then(response => response.json())
+            .then(data => {
+                const tbody = document.querySelector('#configTable tbody');
+                tbody.innerHTML = ''; // Clear existing rows
+
+                data.forEach(config => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                            <td class="px-6 py-4 whitespace-nowrap">${config.id}</td>
+                            <td class="px-6 py-4 whitespace-nowrap">${config.table_name}</td>
+                            <td class="px-6 py-4 whitespace-nowrap">${config.column_name}</td>
+                            <td class="px-6 py-4 whitespace-nowrap">${config.column_order}</td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <button onclick="deleteConfig(${config.id})" class="text-red-600 hover:text-red-900">Delete</button>
+                            </td>
+                        `;
+                    tbody.appendChild(row);
+                });
+            })
+            .catch(error => console.error('Error:', error));
+
+
+    }
+
+    function searchTasks(){
+        let search = document.getElementById("searchInput").value;
+
+        if (search === ""){
+            return loadTask();
+        }
+
+        fetch(`/api/task/${search}/status`)
+            .then(response => response.json())
+            .then(task => {
+                const tbody = document.querySelector('#taskTable tbody');
+                tbody.innerHTML = ''; // Clear existing rows
+                let status = task.status
+                let statusColorClass;
+                switch (status.toLowerCase()) {
+                    case 'success':
+                        statusColorClass = 'text-green-500';
+                        break;
+                    case 'failed':
+                        statusColorClass = 'text-red-500';
+                        break;
+                    case 'processing':
+                        statusColorClass = 'text-yellow-500';
+                        break;
+                    default:
+                        statusColorClass = 'text-gray-500'; // Default color for unknown status
+                }
+
+
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                        <td class="px-6 py-4 whitespace-nowrap">${task.id}</td>
+                        <td class="px-6 py-4 whitespace-nowrap">${task.file_name}</td>
+                        <td class="px-6 py-4 whitespace-nowrap">${task.table_name}</td>
+                        <td class="px-6 py-4 whitespace-nowrap ${statusColorClass}">${task.status}</td>
+                        <td class="px-6 py-4 whitespace-nowrap">${task.error_message || ''}</td>
+                        <td class="px-6 py-4 whitespace-nowrap">${task.elapsed_time} s</td>
+                        <td class="px-6 py-4 whitespace-nowrap">${task.created_at}</td>
+                        <td class="px-6 py-4 whitespace-nowrap">${task.updated_at}</td>
+                    `;
+                tbody.appendChild(row);
+            })
+            .catch(error => console.error('Error:', error));
+    }
+
+    // Load initial section
+    showSection('taskStatus');
+
+    document.getElementById('file').addEventListener('change', function(){
+        const fileName = this.files.length > 0 ? this.files[0].name : 'Select a file';
+        document.getElementById('fileName').textContent = fileName;
+    });
+
+    // Event listeners for navigation
+    document.querySelector('a[href="#tableConfig"]').addEventListener('click', function() {
+        loadConfig();
+        showSection('tableConfig');
+    });
+    document.querySelector('a[href="#uploadFile"]').addEventListener('click', function() {
+        showSection('uploadFile');
+    });
+    document.querySelector('a[href="#taskStatus"]').addEventListener('click', function() {
+        showSection('taskStatus');
+        loadTask();  // Ensure tasks are loaded when navigating to Task Status
+    });
+
+    document.getElementById('logoutButton').onclick = function() {
+        fetch('/logout', {
+            method: 'POST'
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.redirect) {
+                    // 清除前端的登录状态（如有）
+                    sessionStorage.removeItem('isLoggedIn');
+                    // 重定向到登录页面
+                    window.location.href = data.redirect;
+                } else {
+                    alert(data.message);
+                }
+            })
+            .catch(error => console.error('Error:', error));
+    };
+
+    function init(){
+        loadUserinfo()
+        loadTask()
+    }
+
+    function loadUserinfo(){
+        fetch('/api/userinfo', {
+            method: 'GET'
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.username) {
+                    document.getElementById('currentUser').innerText = data.username;
+                } else {
+                    console.error('Failed to load user info');
+                }
+            })
+            .catch(error => console.error('Error:', error));
+    }
+
+    // Load configurations when the page loads
+    window.onload = init;
+
+    // Load configurations from the server
+    function loadConfig() {
+        fetch('/api/table_config')
+            .then(response => response.json())
+            .then(data => {
+                const tbody = document.querySelector('#configTable tbody');
+                tbody.innerHTML = ''; // Clear existing rows
+
+                data.forEach(config => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                            <td class="px-6 py-4 whitespace-nowrap">${config.id}</td>
+                            <td class="px-6 py-4 whitespace-nowrap">${config.table_name}</td>
+                            <td class="px-6 py-4 whitespace-nowrap">${config.column_name}</td>
+                            <td class="px-6 py-4 whitespace-nowrap">${config.column_order}</td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <button onclick="deleteConfig(${config.id})" class="text-red-600 hover:text-red-900">Delete</button>
+                            </td>
+                        `;
+                    tbody.appendChild(row);
+                });
+            })
+            .catch(error => console.error('Error:', error));
+    }
+
+    function loadTask(){
+        fetch('/api/task/recent')
+            .then(response => response.json())
+            .then(data => {
+                const tbody = document.querySelector('#taskTable tbody');
+                tbody.innerHTML = ''; // Clear existing rows
+
+                data.forEach(task => {
+
+                    let status = task.status
+                    let statusColorClass;
+                    switch (status.toLowerCase()) {
+                        case 'success':
+                            statusColorClass = 'text-green-500';
+                            break;
+                        case 'failed':
+                            statusColorClass = 'text-red-500';
+                            break;
+                        case 'processing':
+                            statusColorClass = 'text-yellow-500';
+                            break;
+                        default:
+                            statusColorClass = 'text-gray-500'; // Default color for unknown status
+                    }
+
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                            <td class="px-6 py-4 whitespace-nowrap">${task.id}</td>
+                            <td class="px-6 py-4 whitespace-nowrap">${task.file_name}</td>
+                            <td class="px-6 py-4 whitespace-nowrap">${task.table_name}</td>
+                            <td class="px-6 py-4 whitespace-nowrap ${statusColorClass}">${task.status}</td>
+                            <td class="px-6 py-4 whitespace-nowrap">${task.error_message}</td>
+                            <td class="px-6 py-4 whitespace-nowrap">${task.elapsed_time} s</td>
+                            <td class="px-6 py-4 whitespace-nowrap">${task.created_at}</td>
+                            <td class="px-6 py-4 whitespace-nowrap">${task.updated_at}</td>
+                        `;
+                    tbody.appendChild(row);
+                });
+            })
+            .catch(error => console.error('Error:', error));
+    }
+
+    // Function to handle the form submission to add a new configuration
+    document.getElementById('addConfigForm').onsubmit = function(event) {
+        event.preventDefault();
+
+        const inputs = this.querySelectorAll('input[type="text"], input[type="number"], textarea');
+        inputs.forEach(input => {
+            input.value = input.value.trim();
+        });
+
+        const formData = new FormData(this);
+        fetch('/api/table_config', {
+            method: 'POST',
+            body: formData
+        })
+            .then(response => response.json())
+            .then(data => {
+                alert(data.message);
+                loadConfig(); // Reload configurations after adding
+            })
+            .catch(error => console.error('Error:', error));
+    };
+
+    // Function to delete a configuration
+    function deleteConfig(id) {
+        if (!confirm('Are you sure you want to delete this configuration?')) return;
+
+        fetch(`/api/table_config/${id}`, {
+            method: 'DELETE'
+        })
+            .then(response => response.json())
+            .then(data => {
+                alert(data.message);
+                loadConfig(); // Reload configurations after deleting
+            })
+            .catch(error => console.error('Error:', error));
+    }
+
+    // Upload File logic
+    document.getElementById('uploadForm').onsubmit = function(event) {
+        event.preventDefault();
+
+
+        const fileInput = document.getElementById('file');
+        const progressBar = document.getElementById('progressBar');
+        const messageElement = document.getElementById('message');
+        const table = document.getElementById('table');
+
+
+        messageElement.textContent = 'In processing,please hold on';
+        messageElement.className += ' text-yellow-500';
+
+        const formData = new FormData();
+        formData.append('file', fileInput.files[0]);
+        formData.append('table', table.value);
+
+        const xhr = new XMLHttpRequest();
+        xhr.open('POST', '/upload', true);
+
+        xhr.upload.onprogress = function(event) {
+            if (event.lengthComputable) {
+                const percentComplete = Math.round((event.loaded / event.total) * 100);
+                progressBar.value = percentComplete;
+            }
+        };
+
+        // 上传完成后的回调
+        xhr.onload = function() {
+            if (xhr.status === 200) {
+                messageElement.textContent = 'Upload complete!';
+                messageElement.className = 'text-green-500';
+            } else {
+                messageElement.textContent = 'Upload failed. Please try again.';
+                messageElement.className = 'text-red-500';
+            }
+        };
+
+        xhr.onerror = function() {
+            messageElement.textContent = 'Upload failed. Please try again.';
+            messageElement.className = 'text-red-500';
+        };
+
+        xhr.send(formData);
+
+        // var formData = new FormData(this);
+        // fetch('/upload', {
+        //     method: 'POST',
+        //     body: formData
+        // })
+        //     .then(response => response.json())
+        //     .then(data => {
+        //         if (data.success) {
+        //             messageElement.textContent = data.message;
+        //             messageElement.className += ' text-green-500'; // 上传成功时，文本颜色为绿色
+        //         } else {
+        //             messageElement.textContent = data.message;
+        //             messageElement.className += ' text-red-500'; // 上传失败时，文本颜色为红色
+        //         }
+        //     })
+        //     .catch(error => {
+        //         const messageElement = document.getElementById('message');
+        //         messageElement.textContent = 'Upload failed. Please try again.';
+        //         messageElement.className = 'text-red-500'; // 网络或其他错误时，文本颜色为红色
+        //         console.error('Error:', error);
+        //     });
+    };
+</script>
+</body>
+</html>
