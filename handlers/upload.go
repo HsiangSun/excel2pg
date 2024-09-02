@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"github.com/360EntSecGroup-Skylar/excelize"
 	"github.com/gin-gonic/gin"
+	"github.com/lib/pq"
 	"github.com/sirupsen/logrus"
 	"io"
 	"net/http"
@@ -349,10 +350,18 @@ func processFileData(filePath, md5Str, table string, taskID int, status string) 
 
 			_, err = tx.Exec(query, values...)
 			if err != nil {
-				logrus.Error(err)
+				errMsg := err.Error()
+
+				if err, ok := err.(*pq.Error); ok {
+					where := err.Where
+					errMsg += ">>>" + where
+				}
+
+				logrus.Error("%+v", err)
+				logrus.Errorf("query:%s \nvalues:%+v", query, values)
 				tx.Rollback()                                                                           // 发生错误时回滚事务
 				_, _ = db.DB.Exec("UPDATE uploaded_files SET status = 'Failed' WHERE md5 = $1", md5Str) // 更新状态为 Failed
-				updateTaskStatus(taskID, "Failed", err.Error())
+				updateTaskStatus(taskID, "Failed", errMsg)
 				return
 			}
 		}
