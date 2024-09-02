@@ -14,7 +14,9 @@ import (
 	"net/http"
 	"os"
 	"runtime"
+	"strconv"
 	"strings"
+	"time"
 )
 
 func UploadFile(c *gin.Context) {
@@ -229,6 +231,21 @@ func getColumnTypes(table string) (map[string]string, error) {
 //	runtime.GC() // 最后再手动触发一次 GC
 //}
 
+// Convert Excel date (serial number) to time.Time
+func excelDateToTime(excelDate float64) (time.Time, error) {
+	// Excel has a bug: 1900 is treated as a leap year, so we need to subtract one day from dates before March 1, 1900.
+	const excelEpoch = "1899-12-30"
+	const secondsInDay = 24 * 60 * 60
+
+	epoch, err := time.Parse("2006-01-02", excelEpoch)
+	if err != nil {
+		return time.Time{}, err
+	}
+
+	duration := time.Duration(excelDate * secondsInDay * 1e9) // convert days to nanoseconds
+	return epoch.Add(duration), nil
+}
+
 func processFileData(filePath, md5Str, table string, taskID int, status string) {
 	var upload_id int
 	if status == "" {
@@ -324,6 +341,18 @@ func processFileData(filePath, md5Str, table string, taskID int, status string) 
 							values[j] = val
 						} else {
 							values[j] = nil // 数值类型的空值用 SQL 的 NULL 表示
+						}
+					} else if dataType == "timestamp without time zone" {
+						floatValue, err := strconv.ParseFloat(val, 64)
+						if err == nil {
+							timeValue, err := excelDateToTime(floatValue)
+							if err != nil {
+								log.Fatalf("Failed to convert Excel date to time: %v", err)
+							}
+							timeVal := timeValue.Format("2006-01-02 15:04:05")
+							values[j] = timeVal
+						} else {
+							logrus.Errorf("Cell value is not a date sequence:%s", val)
 						}
 					} else {
 						values[j] = val
