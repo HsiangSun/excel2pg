@@ -7,20 +7,41 @@
     <meta author="sean">
     <meta version="20240828">
 <!--    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">-->
-    <link href="/tailwind.css" rel="stylesheet">
+<!--    <link href="/tailwind.css" rel="stylesheet">-->
+<!--    <link href="https://cdn.tailwindcss.com" rel="stylesheet">-->
+    <script src="/tailwind.js"></script>
+
+<!--    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/tailwind.min.css" rel="stylesheet">-->
 </head>
-<body class="bg-gray-100 h-screen flex">
+<body class="bg-gray-100 dark:bg-gray-900 dark:text-white h-screen flex">
 <!-- 左侧菜单栏 -->
-<aside class="w-64 bg-gray-800 text-white flex flex-col justify-between">
+<aside class="w-64 bg-gray-800 dark:bg-gray-900 text-white flex flex-col justify-between">
     <div>
         <div class="p-6">
             <h2 class="text-3xl font-bold">Upload Dashboard</h2>
         </div>
         <nav class="mt-6">
-            <a href="#taskStatus" class="menu-item block py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700">Task Status</a>
-            <a href="#uploadFile" class="menu-item block py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700">Upload File</a>
-            <a href="#tableConfig" class="menu-item block py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700">Table Config</a>
+            <a href="#taskStatus" class="menu-item block py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700 dark:hover:bg-gray-700">Task Status</a>
+            <a href="#uploadFile" class="menu-item block py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700 dark:hover:bg-gray-700">Upload File</a>
+            <a href="#tableConfig" class="menu-item block py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700 dark:hover:bg-gray-700">Table Config</a>
         </nav>
+    </div>
+
+    <!-- 主题切换 -->
+    <div class="p-6">
+        <label class="inline-flex items-center cursor-pointer">
+            <!-- Switch Container -->
+            <div class="relative">
+                <!-- Hidden Checkbox -->
+                <input type="checkbox" id="themeToggle" class="sr-only peer">
+                <!-- Switch Background -->
+                <div class="w-11 h-6 bg-gray-300 rounded-full dark:bg-gray-600 peer-checked:bg-blue-600 transition duration-300"></div>
+                <!-- Switch Circle -->
+                <div class="absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full border border-gray-300 peer-checked:translate-x-5 peer-checked:border-blue-600 peer-checked:bg-blue-600 dark:bg-gray-400 dark:peer-checked:bg-blue-500 transition-transform duration-300"></div>
+            </div>
+            <!-- Label Text -->
+            <span class="ml-3 text-gray-700 dark:text-gray-300">Dark Mode</span>
+        </label>
     </div>
 
     <!-- 用户信息和退出按钮 -->
@@ -34,32 +55,34 @@
 </aside>
 
 <!-- 右侧内容区 -->
-<div class="flex-1 p-6 bg-gray-100 overflow-y-auto flex justify-center items-center h-full">
+<div class="flex-1 p-6 bg-gray-100 dark:bg-gray-900 dark:text-white overflow-y-auto flex justify-center items-center h-full">
     <!-- Task Status 内容 -->
-    <div id="taskStatus" class="hidden w-full max-w-3xl bg-white p-8 rounded-lg shadow-md">
+    <div id="taskStatus" class="hidden w-full max-w-3xl bg-white dark:bg-gray-800 dark:text-white p-8 rounded-lg shadow-md">
         <h2 class="text-2xl font-bold mb-6 text-center">Task Status</h2>
 
         <!-- 搜索框 -->
         <div class="mb-4">
-            <input type="text" id="searchInput" placeholder="Search by Task ID or File Name" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+            <input type="text" id="searchInput"
+                   placeholder="Search by Task ID or File Name"
+                   class="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm dark:placeholder-gray-400">
         </div>
         <button onclick="searchTasks()" class="mb-6 bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600">Search</button>
 
         <div class="overflow-x-auto">
-            <table id="taskTable" class="min-w-full bg-white border border-gray-200">
-                <thead class="bg-gray-50">
+            <table id="taskTable" class="min-w-full bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600">
+                <thead class="bg-gray-50 dark:bg-gray-800">
                 <tr>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Task ID</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">File Name</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Table Name</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Error Message</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Elapsed Time</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Create At</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Updated At</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Task ID</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">File Name</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Table Name</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Status</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Error Message</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Elapsed Time</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Create At</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Updated At</th>
                 </tr>
                 </thead>
-                <tbody class="bg-white divide-y divide-gray-200">
+                <tbody class="bg-white dark:bg-gray-700 divide-y divide-gray-200 dark:divide-gray-600">
                 <!-- Task data will be dynamically loaded here -->
                 </tbody>
             </table>
@@ -67,31 +90,38 @@
     </div>
 
     <!-- Table Config 内容 -->
-    <div id="tableConfig" class="hidden w-full max-w-3xl bg-white p-8 rounded-lg shadow-md">
+    <div id="tableConfig" class="hidden w-full max-w-3xl bg-white dark:bg-gray-800 dark:text-white p-8 rounded-lg shadow-md">
         <h2 class="text-2xl font-bold mb-6 text-center">Table Configuration</h2>
 
         <!-- 搜索框 -->
         <div class="mb-4">
-            <input type="text" id="searchConfig" placeholder="Search by table name" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+            <input type="text" id="searchConfig"
+                   placeholder="Search by table name"
+                   class="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm dark:placeholder-gray-400">
         </div>
+
         <button onclick="searchConfig()" class="mb-6 bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600">Search</button>
 
         <!-- Form to add a new table configuration -->
         <form id="addConfigForm" class="space-y-4">
             <div>
-                <label for="table_name" class="block text-sm font-medium text-gray-700">Table Name:</label>
-                <input type="text" id="table_name" name="table_name" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                <label for="table_name" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Table Name:</label>
+                <input type="text" id="table_name" name="table_name" required
+                       class="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm dark:placeholder-gray-400">
             </div>
             <div>
-                <label for="column_name" class="block text-sm font-medium text-gray-700">Column Name:</label>
-                <input type="text" id="column_name" name="column_name" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                <label for="column_name" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Column Name:</label>
+                <input type="text" id="column_name" name="column_name" required
+                       class="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm dark:placeholder-gray-400">
             </div>
             <div>
-                <label for="column_order" class="block text-sm font-medium text-gray-700">Column Order:</label>
-                <input type="number" id="column_order" name="column_order" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                <label for="column_order" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Column Order:</label>
+                <input type="number" id="column_order" name="column_order" required
+                       class="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm dark:placeholder-gray-400">
             </div>
             <div>
-                <input type="submit" value="Add Configuration" class="w-full bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600">
+                <input type="submit" value="Add Configuration"
+                       class="w-full bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600">
             </div>
         </form>
 
@@ -99,30 +129,31 @@
 
         <!-- Table to display existing configurations -->
         <div class="overflow-x-auto max-h-96">
-            <table id="configTable" class="min-w-full bg-white border border-gray-200 mx-h-full">
-                <thead class="bg-gray-50">
+            <table id="configTable" class="min-w-full bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600">
+                <thead class="bg-gray-50 dark:bg-gray-800">
                 <tr>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Table Name</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Column Name</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Column Order</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">ID</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Table Name</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Column Name</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Column Order</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Actions</th>
                 </tr>
                 </thead>
-                <tbody class="bg-white divide-y divide-gray-200">
+                <tbody class="bg-white dark:bg-gray-700 divide-y divide-gray-200 dark:divide-gray-600">
                 <!-- Configurations will be dynamically loaded here -->
                 </tbody>
             </table>
         </div>
     </div>
 
+
     <!-- Upload File 内容 -->
-    <div id="uploadFile" class="hidden w-full max-w-3xl bg-white p-8 rounded-lg shadow-md">
+    <div id="uploadFile" class="hidden w-full max-w-3xl bg-white dark:bg-gray-800 dark:text-white p-8 rounded-lg shadow-md">
         <h2 class="text-2xl font-bold mb-6 text-center">Upload Excel File</h2>
 
         <form id="uploadForm" class="space-y-4">
             <div>
-                <label class="block text-sm font-medium text-gray-700">Choose Excel file:</label>
+                <label class="block text-sm font-medium text-gray-500">Choose Excel file:</label>
                 <div class="mt-1 flex items-center">
                     <label for="file" class="cursor-pointer bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600">
                         <span id="fileName">Select a file</span>
@@ -131,8 +162,8 @@
                 </div>
             </div>
             <div>
-                <label for="table" class="block text-sm font-medium text-gray-700">Target Database Table:</label>
-                <input type="text" id="table" name="table" placeholder="Enter table name" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                <label for="table" class="block text-sm font-medium text-gray-500">Target Database Table:</label>
+                <input type="text" id="table" name="table" placeholder="Enter table name" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white-500 dark:placeholder-gray-400">
             </div>
             <div>
                 <div class="mb-4">
@@ -146,6 +177,19 @@
 </div>
 
 <script>
+    tailwind.config = {
+        darkMode: 'class', /* 'class' or 'media', we use 'class' to enable dark mode manually */
+    }
+    //theme change
+    const themeToggle = document.getElementById('themeToggle');
+    themeToggle.addEventListener('change', function() {
+        if (this.checked) {
+            document.body.classList.add('dark');
+        } else {
+            document.body.classList.remove('dark');
+        }
+    });
+
     // Function to toggle between views
     function showSection(sectionId) {
         document.querySelectorAll('.menu-item').forEach(item => {

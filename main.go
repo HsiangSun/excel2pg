@@ -51,6 +51,9 @@ func main() {
 	router.GET("/tailwind.css", func(c *gin.Context) {
 		c.File("./static/tailwind.css")
 	})
+	router.GET("/tailwind.js", func(c *gin.Context) {
+		c.File("./static/tailwind.js")
+	})
 	router.GET("/favicon.ico", func(c *gin.Context) {
 		c.File("./static/favicon.ico")
 	})
