@@ -436,8 +436,18 @@
                 messageElement.textContent = 'Upload complete!';
                 messageElement.className = 'text-green-500';
             } else {
-                messageElement.textContent = 'Upload failed. Please try again.';
+
+                // 打印服务器响应中的message信息
+                try {
+                    const response = JSON.parse(xhr.responseText);
+                    messageElement.textContent = response.message || 'Upload failed. Please try again.';
+                } catch (error) {
+                    messageElement.textContent = 'Upload failed. Please try again.';
+                }
                 messageElement.className = 'text-red-500';
+                //
+                // messageElement.textContent = 'Upload failed. Please try again.';
+                // messageElement.className = 'text-red-500';
             }
         };
 

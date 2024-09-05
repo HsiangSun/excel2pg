@@ -246,6 +246,16 @@ func excelDateToTime(excelDate float64) (time.Time, error) {
 	return epoch.Add(duration), nil
 }
 
+// 判断行是否为空
+func isEmptyRow(row []string) bool {
+	for _, cell := range row {
+		if strings.TrimSpace(cell) != "" {
+			return false // 行中有内容，不为空行
+		}
+	}
+	return true // 行中所有单元格都为空
+}
+
 func processFileData(filePath, md5Str, table string, taskID int, status string) {
 	var upload_id int
 	if status == "" {
@@ -325,6 +335,11 @@ func processFileData(filePath, md5Str, table string, taskID int, status string) 
 		for rows.Next() {
 			column := rows.Columns()
 
+			if isEmptyRow(column) {
+				logrus.Infof("Skipping empty row: %d", rowIndex)
+				continue
+			}
+
 			rowIndex++
 			if rowIndex == 1 {
 				continue // 跳过表头行
@@ -352,7 +367,9 @@ func processFileData(filePath, md5Str, table string, taskID int, status string) 
 							timeVal := timeValue.Format("2006-01-02 15:04:05")
 							values[j] = timeVal
 						} else {
-							logrus.Errorf("Cell value is not a date sequence:%s", val)
+							//logrus.Errorf("Cell value is not a date sequence:%s", val)
+							//excelDateToTime is text
+							values[j] = val
 						}
 					} else {
 						values[j] = val
