@@ -290,8 +290,9 @@ func processFileData(filePath, md5Str, table string, taskID int, status string) 
 		}
 
 		//only insert configured filed
-		if _, ok := columnTypes[columnName]; ok {
-			columns = append(columns, fmt.Sprintf(`%s`, columnName))
+		lowerColumnName := strings.ToLower(columnName)
+		if _, ok := columnTypes[lowerColumnName]; ok {
+			columns = append(columns, fmt.Sprintf(`%s`, lowerColumnName))
 		}
 
 	}
